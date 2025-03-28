@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gnofiv.com</title>
+  <style>
+    /* Reset và thiết lập chung */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    /* Navigation Bar */
+    header {
+      background-color: #222;
+      padding: 1rem 2rem;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+    }
+    .nav-links li {
+      margin-left: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+    .nav-links a:hover {
+      color: #ff5a5f;
+    }
+    
+    /* Cart Icon (Giỏ hàng - ở góc trên bên phải) */
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+    }
+    .cart-icon a {
+      color: #fff;
+      font-size: 1.2rem;
+      text-decoration: none;
+    }
+    .cart-popup {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 120%;
+      width: 300px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 2000;
+    }
+    .cart-popup h3 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .cart-popup ul {
+      list-style: none;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-left: 0;
+    }
+    .cart-popup li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px dotted #ccc;
+      padding-bottom: 3px;
+    }
+    .cart-popup li:last-child {
+      border-bottom: none;
+    }
+    .cart-popup button.remove-item {
+      background: #f66;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+    
+    /* FAQ Floating Widget (ở dưới cùng bên phải) */
+    .faq-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff5a5f;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+      z-index: 1000;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .faq-popup {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 0.5rem;
+      width: 240px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      color: #222;
+      display: none;
+      z-index: 1000;
+      font-size: 14px;
+    }
+    .faq-popup a {
+      color: #ff5a5f;
+      text-decoration: underline;
+    }
+    
+    /* Hero Banner với ảnh nền tự động cập nhật */
+    .hero {
+      position: relative;
+      height: 70vh;
+      background: url('banner1.jpg') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      transition: background-image 1s ease-in-out;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero button {
+      padding: 0.8rem 2rem;
+      font-size: 1.2rem;
+      background: #ff5a5f;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero button:hover {
+      background: #ff7a7f;
+    }
+    
+    /* New Games Section */
+    .new-games {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .new-games h2 {
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      border-left: 4px solid #ff5a5f;
+      padding-left: 10px;
+    }
+    .game-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .game-card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .game-card:hover {
+      transform: translateY(-5px);
+    }
+    .game-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .game-card:hover img {
+      transform: scale(1.1);
+    }
+    .card-content {
+      padding: 1rem;
+    }
+    .card-content h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .details {
+      font-size: 0.9rem;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      background: #ff5a5f;
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+    }
+    /* Nút "Chọn mua" trên card game */
+    .buy-game {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .buy-game:hover {
+      background-color: #0056b3;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none; /* Ẩn mặc định */
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+      position: relative;
+    }
+    .modal-content img {
+      width: 100%;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #000;
+    }
+    /* Modal Buttons */
+    .modal-buttons {
+      text-align: center;
+    }
+    .purchase-now {
+      margin-right: 10px;
+      padding: 0.5rem 1rem;
+      background-color: #28a745;
+      border: none;
+      color: #fff;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .purchase-now:hover {
+      background-color: #218838;
+    }
+    .add-to-cart-modal {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .add-to-cart-modal:hover {
+      background-color: #0056b3;
+    }
+    
+    /* Footer */
+    footer {
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    .login-icon {
+  margin-left: 1rem;
+}
+.login-icon {
+  margin-left: 1rem;
+}
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar với giỏ hàng ở góc trên bên phải -->
+  <header>
+    <div class="nav-logo">Gnofiv.com</div>
+    <ul class="nav-links">
+      <li><a href="#">Trang chủ</a></li>
+      <!-- Giỏ hàng -->
+      <li class="cart-icon" id="cart-icon">
+        <a href="javascript:void(0)">🛒 (<span id="cart-count">0</span>)</a>
+        <div class="cart-popup" id="cart-popup">
+          <h3>Giỏ hàng của bạn</h3>
+          <ul id="cart-items">
+          </ul>
+        </div>
+      </li>
+    </ul>
+    <li class="login-icon">
+      <a href="">Login</a>
+    </li>    
+  </header>
+  
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Gnofiv.com Luôn cập nhật những game hot hàng ngày!!!</h1>
+      <button onclick="downloadNow()">DOWNLOAD NOW</button>
+    </div>
+  </section>
+  
+  <section class="new-games">
+    <h2>GAME MỚI</h2>
+    <div class="game-cards">
+      <div class="game-card">
+        <img src="cyperpunk.jpg" alt="Game 1" />
+        <div class="card-content">
+          <h3>Cyperpunk 2077</h3>
+          <div class="details">
+            <span>28-03-2025</span>
+            <span>136 views</span>
+            <span class="badge">New</span>
+          </div>
+          <button class="buy-game" data-title="Game Title 1" data-price="500,000 VND" data-image="game1.jpg">Chọn mua</button>
+        </div>
+      </div>
+      <div class="game-card">
+        <img src="black.jpg" alt="Game 2" />
+        <div class="card-content">
+          <h3>Black Myth Wukong</h3>
+          <div class="details">
+            <span>28-03-2025</span>
+            <span>254 views</span>
+            <span class="badge">New</span>
+          </div>
+          <button class="buy-game" data-title="Game Title 2" data-price="1,000,000 VND" data-image="game2.jpg">Chọn mua</button>
+        </div>
+      </div>
+      <div class="game-card">
+        <img src="pubg.jpg" alt="Game 3" />
+        <div class="card-content">
+          <h3>PUBG</h3>
+          <div class="details">
+            <span>28-03-2025</span>
+            <span>14 views</span>
+            <span class="badge">New</span>
+          </div>
+          <button class="buy-game" data-title="Game Title 3" data-price="750,000 VND" data-image="game3.jpg">Chọn mua</button>
+        </div>
+      </div>
+      <!-- Các card game khác nếu cần -->
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Gnofiv.com. All rights reserved.</p>
+  </footer>
+  
+  <!-- FAQ Floating Widget -->
+  <div class="faq-widget">FAQ</div>
+  <div class="faq-popup">
+    <p>Điện thoại: 0971-914-299</p>
+    <p>Facebook: <a href="https://facebook.com/gnofiv" target="_blank">Gnofiv trên Facebook</a></p>
+  </div>
+  
+  <!-- Modal hiển thị thông tin game -->
+  <div id="game-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <img id="modal-image" src="" alt="Game Image" />
+      <h2 id="modal-game-title"></h2>
+      <p id="modal-game-price"></p>
+      <div class="modal-buttons">
+        <button id="purchase-now" class="purchase-now">Mua ngay</button>
+        <button id="add-to-cart" class="add-to-cart-modal">Thêm vào giỏ hàng</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Hàm xử lý khi nhấn nút DOWNLOAD NOW
+    function downloadNow() {
+      alert("Bắt đầu tải game từ Gnofiv.com!");
+    }
+    
+    // Tự động cập nhật ảnh nền của Hero Banner mỗi 3 giây
+    const hero = document.querySelector('.hero');
+    const heroImages = ['nen1.jpg', 'nen2.jpg', 'nen3.jpg'];
+    let currentHeroIndex = 0;
+    setInterval(() => {
+      currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
+      hero.style.backgroundImage = `url('${heroImages[currentHeroIndex]}')`;
+    }, 3000);
+    
+    // Xử lý mở modal hiển thị thông tin game
+    const modal = document.getElementById('game-modal');
+    const modalImage = document.getElementById('modal-image');
+    const modalGameTitle = document.getElementById('modal-game-title');
+    const modalGamePrice = document.getElementById('modal-game-price');
+    const closeModalBtn = document.querySelector('.modal .close');
+    
+    function openModal(gameTitle, gamePrice, gameImage) {
+      modalImage.src = gameImage;
+      modalGameTitle.textContent = gameTitle;
+      modalGamePrice.textContent = `Giá: ${gamePrice}`;
+      modal.style.display = 'block';
+    }
+    
+    // Lắng nghe sự kiện cho nút "Chọn mua" trên card game
+    const buyGameButtons = document.querySelectorAll('.buy-game');
+    buyGameButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const title = button.getAttribute('data-title');
+        const price = button.getAttribute('data-price');
+        const image = button.getAttribute('data-image');
+        openModal(title, price, image);
+      });
+    });
+    
+    // Đóng modal khi nhấn nút "×"
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    
+    // Đóng modal khi nhấn bên ngoài modal-content
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+    
+    // Mảng lưu trữ sản phẩm trong giỏ hàng
+    let cartItems = [];
+    
+    // Cập nhật nội dung giỏ hàng
+    function updateCartPopup() {
+      const cartCountElem = document.getElementById('cart-count');
+      const cartItemsElem = document.getElementById('cart-items');
+      cartCountElem.textContent = cartItems.length;
+      cartItemsElem.innerHTML = "";
+      cartItems.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          ${item.title} - ${item.price} 
+          <button class="remove-item" onclick="removeCartItem(${index})">X</button>
+        `;
+        cartItemsElem.appendChild(li);
+      });
+    }
+    
+    // Hàm xóa sản phẩm khỏi giỏ hàng
+    function removeCartItem(index) {
+      cartItems.splice(index, 1);
+      updateCartPopup();
+    }
+    
+    // Xử lý nút "Mua ngay" trong modal
+    const purchaseNowButton = document.getElementById('purchase-now');
+    purchaseNowButton.addEventListener('click', () => {
+      alert(`Bạn đã mua ngay: ${modalGameTitle.textContent}\n${modalGamePrice.textContent}`);
+      modal.style.display = 'none';
+    });
+    
+    // Xử lý nút "Thêm vào giỏ hàng" trong modal
+    const addToCartButton = document.getElementById('add-to-cart');
+    addToCartButton.addEventListener('click', () => {
+      const item = {
+        title: modalGameTitle.textContent,
+        price: modalGamePrice.textContent.replace('Giá: ', ''),
+        image: modalImage.src
+      };
+      cartItems.push(item);
+      updateCartPopup();
+      alert(`Game "${item.title}" đã được thêm vào giỏ hàng.`);
+      modal.style.display = 'none';
+    });
+    
+    // Xử lý hiển thị popup giỏ hàng khi click vào icon giỏ hàng
+    const cartIcon = document.getElementById('cart-icon');
+    cartIcon.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const cartPopup = document.getElementById('cart-popup');
+      cartPopup.style.display = (cartPopup.style.display === 'block') ? 'none' : 'block';
+    });
+    // Ẩn popup giỏ hàng nếu click bên ngoài
+    document.addEventListener('click', () => {
+      const cartPopup = document.getElementById('cart-popup');
+      cartPopup.style.display = 'none';
+    });
+    
+  </script>
+</body>
+</html>
